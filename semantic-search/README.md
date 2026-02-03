@@ -81,3 +81,7 @@ Metadata filtering (subject, unit, exam type)
 OCR for scanned PDFs
 
 API endpoints for web integration
+
+
+## Screenshot of working example
+<img width="589" height="253" alt="{F4CAD278-A1D0-4D65-B6C8-5C058E0CB09A}" src="https://github.com/user-attachments/assets/6fae274a-04bd-4ebb-9ee9-ebc578cd8c5b" />
