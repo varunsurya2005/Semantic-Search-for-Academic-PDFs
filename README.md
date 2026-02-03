@@ -58,29 +58,6 @@ Answers grounded strictly in uploaded PDFs
 
 ⚠️ Note: RAG and the website are not part of the current implementation and are planned as future enhancements.
 
-## System Design (Current)
-  PDFs
-
-   ↓
-
-Text Extraction
-
-
-↓
-
-Chunking
-
-↓
-
-Embeddings (SentenceTransformers)
-
-↓
-
-Endee Vector Index
-
-↓
-
-Semantic Similarity Search
 ### Tech Stack
 
 Python 3
@@ -93,15 +70,99 @@ PyPDF
 
 Docker (for Endee server)
 
-### How Endee Is Used
+### Role of Endee in the System
 
-Stores dense vector embeddings of PDF text chunks
+Endee is responsible for:
 
-Performs cosine similarity search
+1) Storing high-dimensional vector embeddings of document text
 
-Returns ranked, semantically relevant passages
+2) Performing fast similarity search over those vectors
 
-Acts as the retrieval backbone for future RAG pipelines
+3) Returning the most relevant document chunks for a given user query
+
+3) Endee acts as the retrieval layer of the AI system.
+
+### Endee Usage Workflow (Step-by-Step)
+1) #### Index Creation in Endee
+
+An index is created in Endee to store document embeddings.
+
+client.create_index(
+    name="semantic_docs",
+    dimension=384,
+    space_type="cosine",
+    precision=Precision.INT8D
+)
+
+
+dimension = 384 → matches the embedding size produced by the sentence-transformer model
+
+cosine similarity → used for semantic similarity search
+
+INT8D precision → optimized for memory and performance
+
+This index is created once and reused across runs.
+
+2) #### Ingesting Data into Endee
+
+During ingestion:
+
+1) PDF files are loaded
+
+2) Each page is split into smaller text chunks
+
+3) Each chunk is converted into a vector embedding
+
+4) Vectors are stored in Endee along with metadata
+
+<img width="572" height="319" alt="image" src="https://github.com/user-attachments/assets/54f46108-466f-4f68-976e-1b2a479d373c" />
+
+vector → numerical representation of text
+
+meta.text → original text used later for display or answer generation
+
+meta.source/page → enables traceability to the original document
+
+Endee stores both vectors and metadata, making retrieval contextual and explainable.
+
+3) ### Querying Endee for Semantic Search
+
+When a user enters a query:
+
+The query is converted into an embedding
+
+Endee performs similarity search
+
+Top-K relevant document chunks are returned
+
+<img width="380" height="161" alt="image" src="https://github.com/user-attachments/assets/a21fb19d-d536-478d-ab5c-4fa47b79a803" />
+
+Endee returns:
+The most semantically similar chunks
+
+Metadata (original text, source, page number)
+
+This allows the system to retrieve meaning-based results, not keyword matches.
+
+### Why Endee Was Chosen
+
+Endee was chosen because:
+
+It is optimized for vector search and retrieval
+
+It supports high-performance similarity search
+
+It integrates easily with Python-based ML workflows
+
+It is suitable for production-grade AI systems
+
+This project demonstrates a real-world usage of Endee in an AI retrieval pipeline.
+
+### System Architecture
+<img width="490" height="351" alt="image" src="https://github.com/user-attachments/assets/602d354f-5261-4a62-ab2d-9ee350021ef3" />
+
+
+Endee is the central component enabling efficient and scalable semantic retrieval.
 
 ## Setup & Execution
 1️⃣ Start Endee Server
